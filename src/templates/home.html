@@ -1,0 +1,13 @@
+{%extends 'base.html'%}
+
+
+{% block head-title%} home page {{block.super}} {%endblock head-title %}
+
+
+{%block content%}
+
+<p>this is extended paragrapgh</p>
+
+page visits: {{page_visit_count}}
+
+{%endblock content%}
