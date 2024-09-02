@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block head-title%}Saas{% endblock head-title%}</title>
+    {%include 'base/css.html'%}
 </head>
 <body>
-
+    {% include 'navbar/navbar.html' %}
     {%block content%}
 
 
     {%endblock content%}
 
-    
+   {% include 'base/js.html' %} 
 </body>
 </html>

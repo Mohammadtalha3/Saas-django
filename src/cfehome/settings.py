@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from decouple  import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,10 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-$q5cw7%ojjl_3_!-)p0v*7ho!174plk5ack_lqlhh=p)4d$6)f'
+SECRET_KEY = config('DJNAGO_SECRET_KEY') #envirnoment varibales
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DJANGO_DEBUG', cast= bool)
+
+print("Debug ", DEBUG, type(DEBUG))
 
 ALLOWED_HOSTS = [".railway.app"]
 if DEBUG:
@@ -31,7 +34,7 @@ if DEBUG:
         "127.0.0.1",
         'localhost'
 
-    ]
+    ]   
 
 
 # Application definition
@@ -43,7 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'visits'
+    'visits',
+    'commando'
 ]
 
 # INSTALLED_APPS+=[
@@ -91,6 +95,20 @@ DATABASES = {
     }
 }
 
+# Custom datbase has been set
+CONN_MAX_AGE= config('CONN_MAX_AGE', cast=int, default= 30)
+DATABASES_URl=  config('DATABASE_URL', cast= str)
+
+if DATABASES_URl is not None:
+    import dj_database_url
+    DATABASES= {
+        "default": dj_database_url.config(
+            default= DATABASES_URl, 
+            conn_max_age=CONN_MAX_AGE, 
+            conn_health_checks= True,
+            )
+    }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -127,6 +145,37 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_BASE_DIR= BASE_DIR / "staticfiles"
+STATICFILES_VENDOR_DIR= STATICFILES_BASE_DIR /'vendors'
+
+print('this is the template dolder ', STATICFILES_BASE_DIR)
+print('this is static vendor folder', STATICFILES_VENDOR_DIR)
+import os
+if os.path.exists(STATICFILES_BASE_DIR) and os.path.isdir(STATICFILES_BASE_DIR):
+    # List all files in the directory
+    files = os.listdir(STATICFILES_BASE_DIR)
+    
+    if files:  # Check if the directory contains any files
+        print("Files in the directory:")
+        for file in files:
+            print(file)
+    else:
+        print("The directory is empty.")
+else:
+    print(f"The directory {STATICFILES_BASE_DIR} does not exist.")
+
+
+#Sources for python manage.py  collect static
+STATICFILES_DIRS= [
+    STATICFILES_BASE_DIR
+]
+
+# output for python manage.py  collectstatic
+#local cdn
+
+STATIC_ROOT= BASE_DIR / "local-cdn "
+
+print('this is parent static_root', STATIC_ROOT)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
